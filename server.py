@@ -1,4 +1,4 @@
-from flask import Flask, request, Response, stream_with_context
+from flask import Flask, abort, request, Response, stream_with_context
 from flask_restplus import Api, Resource
 import os
 import requests
@@ -18,6 +18,7 @@ app.config['ERROR_404_HELP'] = False
 
 OGC_SERVER_URL = os.environ.get('OGC_SERVICE_URL',
                                 'http://localhost:5013/').rstrip("/") + "/"
+
 
 # routes
 @api.route('/<mapid>')
@@ -79,12 +80,7 @@ class Print(Resource):
 
         # extract any external WMS and WFS layers
         external_ows_layers = ExternalOwsLayers(app.logger)
-        sld_body = external_ows_layers.sld_layers(
-            layers, colors, opacities, params['SRS'], params.get('DPI')
-        )
-        if sld_body:
-            # add external layers as SLD UserLayers
-            params['SLD_BODY'] = sld_body
+        external_ows_layers.update_params(params, layerparam)
 
         # forward to QGIS server
         url = OGC_SERVER_URL + mapid
