@@ -95,7 +95,7 @@ class Print(Resource):
         response.headers['content-type'] = req.headers['content-type']
         if req.headers['content-type'] == 'application/pdf':
             response.headers['content-disposition'] = \
-                'attachment; filename=' + mapid + '.' + params['FORMAT']
+                'filename=' + mapid + '.' + params['FORMAT']
 
         return response
 
