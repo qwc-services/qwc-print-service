@@ -1,3 +1,4 @@
 Flask
 flask-restplus
 requests
+psycopg2==2.7.6.1

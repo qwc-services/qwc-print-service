@@ -1,8 +1,12 @@
 from flask import Flask, abort, request, Response, stream_with_context
 from flask_restplus import Api, Resource
+from flask_jwt_extended import jwt_optional, get_jwt_identity
 import os
 import requests
+import json
+import psycopg2
 
+from qwc_services_core.jwt import jwt_manager
 from external_ows_layers import ExternalOwsLayers
 
 
@@ -15,9 +19,12 @@ api = Api(app, version='1.0', title='GetPrint API',
 # disable verbose 404 error message
 app.config['ERROR_404_HELP'] = False
 
+# Setup the Flask-JWT-Extended extension
+jwt = jwt_manager(app, api)
 
 OGC_SERVER_URL = os.environ.get('OGC_SERVICE_URL',
                                 'http://localhost:5013/').rstrip("/") + "/"
+QWC_PRINT_SERVICE_CONFIG = os.environ.get("QWC_PRINT_SERVICE_CONFIG", None)
 
 
 # routes
@@ -25,6 +32,7 @@ OGC_SERVER_URL = os.environ.get('OGC_SERVICE_URL',
 @api.param('mapid', 'The WMS service map name')
 class Print(Resource):
     @api.doc('print')
+    @jwt_optional
     @api.param('DPI', 'The print dpi', _in='formData')
     @api.param('SRS', 'The SRS of the specified map extent', _in='formData')
     @api.param('TEMPLATE', 'The print template', _in='formData')
@@ -81,6 +89,26 @@ class Print(Resource):
         # extract any external WMS and WFS layers
         external_ows_layers = ExternalOwsLayers(app.logger)
         external_ows_layers.update_params(params, layerparam)
+
+        # add fields from QWC_PRINT_SERVICE_CONFIG
+        if QWC_PRINT_SERVICE_CONFIG:
+            try:
+                with open(QWC_PRINT_SERVICE_CONFIG, 'r') as fh:
+                    print_config = json.load(fh)
+            except:
+                print_config = None
+            if print_config and "labels" in print_config:
+                for label_config in print_config["labels"]:
+                    conn = psycopg2.connect(service=label_config["service"])
+                    sql = label_config["query"].replace("$username$", "'%s'" % (get_jwt_identity() or ""))
+                    cursor = conn.cursor()
+                    cursor.execute(sql)
+                    row = cursor.fetchone()
+                    cursor.close()
+                    if row:
+                        for idx, param in enumerate(label_config['params']):
+                            params[param] = row[idx]
+                    conn.close()
 
         # forward to QGIS server
         url = OGC_SERVER_URL + mapid
