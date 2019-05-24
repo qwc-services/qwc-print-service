@@ -45,10 +45,6 @@ Development
 
 Create a virtual environment:
 
-    virtualenv --python=/usr/bin/python3 --system-site-packages .venv
-
-Without system packages:
-
     virtualenv --python=/usr/bin/python3 .venv
 
 Activate virtual environment:
