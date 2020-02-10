@@ -2,3 +2,5 @@ Flask
 flask-restplus
 requests
 psycopg2==2.7.6.1
+werkzeug==0.16.1
+jsonschema==2.6.0
