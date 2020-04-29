@@ -64,7 +64,8 @@ class Print(Resource):
         tenant = tenant_handler.tenant()
         config = config_handler.tenant_config(tenant)
 
-        ogc_server_url = config.get('ogc_server_url', 'http://localhost:5013/')
+        ogc_service_url = config.get(
+            'ogc_service_url', 'http://localhost:5013/')
         print_pdf_filename = config.get('print_pdf_filename')
         qgs_postfix = config.get('qgs_postfix', '')
         qgis_server_version = config.get('qgis_server_version', '2.18.19')
@@ -119,7 +120,7 @@ class Print(Resource):
             conn.close()
 
         # forward to QGIS server
-        url = ogc_server_url.rstrip("/") + "/" + mapid + qgs_postfix
+        url = ogc_service_url.rstrip("/") + "/" + mapid + qgs_postfix
         req = requests.post(url, timeout=120, data=params)
         app.logger.info("Forwarding request to %s\n%s" % (req.url, params))
 
