@@ -65,6 +65,8 @@ class Print(Resource):
         config = config_handler.tenant_config(tenant)
 
         ogc_server_url = config.get('ogc_server_url', 'http://localhost:5013/')
+        print_pdf_filename = config.get('print_pdf_filename')
+        qgs_postfix = config.get('qgs_postfix', '')
         qgis_server_version = config.get('qgis_server_version', '2.18.19')
         label_queries_config = config.get('label_queries', [])
         # TODO: read resources
@@ -93,7 +95,9 @@ class Print(Resource):
 
         template = params.get('TEMPLATE')
         layers = params.get(layerparam, '').split(',')
-        opacities = params.get('OPACITIES', '').split(',')
+        opacities = params.get('OPACITIES', [])
+        if opacities:
+            opacities = opacities.split(',')
         colors = params.get('COLORS', '').split(',')
 
         # extract any external WMS and WFS layers
@@ -115,7 +119,7 @@ class Print(Resource):
             conn.close()
 
         # forward to QGIS server
-        url = ogc_server_url + mapid
+        url = ogc_server_url.rstrip("/") + "/" + mapid + qgs_postfix
         req = requests.post(url, timeout=120, data=params)
         app.logger.info("Forwarding request to %s\n%s" % (req.url, params))
 
@@ -126,8 +130,9 @@ class Print(Resource):
         )
         response.headers['content-type'] = req.headers['content-type']
         if req.headers['content-type'] == 'application/pdf':
+            filename = print_pdf_filename or (mapid + '.pdf')
             response.headers['content-disposition'] = \
-                'filename=' + mapid + '.' + params['FORMAT']
+                'attachment; filename=' + filename
 
         return response
 

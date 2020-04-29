@@ -29,6 +29,10 @@
           "description": "QGIS Server version (e.g. 2.18.19, 3.4.1)",
           "type": "string"
         },
+        "qgs_postfix": {
+          "description": "optional postfix to QGS name for printing",
+          "type": "string"
+        },
         "print_pdf_filename": {
           "description": "optional filename for returned PDF (default: <WMS map name>.pdf)",
           "type": "string"
