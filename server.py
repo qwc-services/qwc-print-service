@@ -7,13 +7,15 @@ import json
 import psycopg2
 
 from qwc_services_core.jwt import jwt_manager
+from qwc_services_core.tenant_handler import TenantHandler
+from qwc_services_core.runtime_config import RuntimeConfig
 from external_ows_layers import ExternalOwsLayers
 
 
 # Flask application
 app = Flask(__name__)
-api = Api(app, version='1.0', title='GetPrint API',
-          description='API for QWC GetPrint service',
+api = Api(app, version='1.0', title='Print API',
+          description='API for QWC Print service',
           default_label='Print operations', doc='/api/')
 
 # disable verbose 404 error message
@@ -22,9 +24,9 @@ app.config['ERROR_404_HELP'] = False
 # Setup the Flask-JWT-Extended extension
 jwt = jwt_manager(app, api)
 
-OGC_SERVER_URL = os.environ.get('OGC_SERVICE_URL',
-                                'http://localhost:5013/').rstrip("/") + "/"
-QWC_PRINT_SERVICE_CONFIG = os.environ.get("QWC_PRINT_SERVICE_CONFIG", None)
+
+tenant_handler = TenantHandler(app.logger)
+config_handler = RuntimeConfig("print", app.logger)
 
 
 # routes
@@ -59,6 +61,14 @@ class Print(Resource):
 
         Return map print
         """
+        tenant = tenant_handler.tenant()
+        config = config_handler.tenant_config(tenant)
+
+        ogc_server_url = config.get('ogc_server_url', 'http://localhost:5013/')
+        qgis_server_version = config.get('qgis_server_version', '2.18.19')
+        label_queries_config = config.get('label_queries', [])
+        # TODO: read resources
+
         post_params = dict(request.form.items())
         app.logger.info("POST params: %s" % post_params)
 
@@ -87,31 +97,25 @@ class Print(Resource):
         colors = params.get('COLORS', '').split(',')
 
         # extract any external WMS and WFS layers
-        external_ows_layers = ExternalOwsLayers(app.logger)
+        external_ows_layers = ExternalOwsLayers(
+            qgis_server_version, app.logger)
         external_ows_layers.update_params(params, layerparam)
 
-        # add fields from QWC_PRINT_SERVICE_CONFIG
-        if QWC_PRINT_SERVICE_CONFIG:
-            try:
-                with open(QWC_PRINT_SERVICE_CONFIG, 'r') as fh:
-                    print_config = json.load(fh)
-            except:
-                print_config = None
-            if print_config and "labels" in print_config:
-                for label_config in print_config["labels"]:
-                    conn = psycopg2.connect(service=label_config["service"])
-                    sql = label_config["query"].replace("$username$", "'%s'" % (get_jwt_identity() or ""))
-                    cursor = conn.cursor()
-                    cursor.execute(sql)
-                    row = cursor.fetchone()
-                    cursor.close()
-                    if row:
-                        for idx, param in enumerate(label_config['params']):
-                            params[param] = row[idx]
-                    conn.close()
+        # add fields from custom label queries
+        for label_config in label_queries_config:
+            conn = psycopg2.connect(label_config["db_url"])
+            sql = label_config["query"].replace("$username$", "'%s'" % (get_jwt_identity() or ""))
+            cursor = conn.cursor()
+            cursor.execute(sql)
+            row = cursor.fetchone()
+            cursor.close()
+            if row:
+                for idx, param in enumerate(label_config['params']):
+                    params[param] = row[idx]
+            conn.close()
 
         # forward to QGIS server
-        url = OGC_SERVER_URL + mapid
+        url = ogc_server_url + mapid
         req = requests.post(url, timeout=120, data=params)
         app.logger.info("Forwarding request to %s\n%s" % (req.url, params))
 

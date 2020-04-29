@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/qwc-services/qwc-print-service/master/schemas/qwc-print-service.json",
+  "title": "QWC Print Service",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "title": "JSON Schema",
+      "description": "Reference to JSON schema of this config",
+      "type": "string",
+      "format": "uri",
+      "default": "https://raw.githubusercontent.com/qwc-services/qwc-print-service/master/schemas/qwc-print-service.json"
+    },
+    "service": {
+      "title": "Service name",
+      "type": "string",
+      "const": "print"
+    },
+    "config": {
+      "title": "Config options",
+      "type": "object",
+      "properties": {
+        "ogc_service_url": {
+          "description": "OGC Service URL (internal)",
+          "type": "string",
+          "format": "uri"
+        },
+        "qgis_server_version": {
+          "description": "QGIS Server version (e.g. 2.18.19, 3.4.1)",
+          "type": "string"
+        },
+        "print_pdf_filename": {
+          "description": "optional filename for returned PDF (default: <WMS map name>.pdf)",
+          "type": "string"
+        },
+        "label_queries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "db_url": {
+                "type": "string"
+              },
+              "query": {
+                "type": "string"
+              },
+              "params": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "db_url",
+              "params",
+              "query"
+            ]
+          }
+        }
+      },
+      "required": [
+        "ogc_service_url",
+        "qgis_server_version"
+      ]
+    },
+    "resources": {
+      "title": "Resources",
+      "type": "object",
+      "properties": {
+        "print_templates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "template": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "template"
+            ]
+          }
+        }
+      },
+      "required": [
+        "print_templates"
+      ]
+    }
+  },
+  "required": [
+    "service",
+    "config",
+    "resources"
+  ]
+}

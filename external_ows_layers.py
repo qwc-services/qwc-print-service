@@ -1,11 +1,7 @@
-import os
 import random
 import re
 
 import requests
-
-
-QGIS_SERVER_VERSION = os.environ.get('QGIS_SERVER_VERSION', '2.18.19')
 
 
 class ExternalOwsLayers:
@@ -14,7 +10,7 @@ class ExternalOwsLayers:
     Helper class to get SLD for external WMS and WFS layers.
     """
 
-    def __init__(self, logger):
+    def __init__(self, qgis_server_version, logger):
         """Constructor
 
         :param Logger logger: Application logger
@@ -22,14 +18,14 @@ class ExternalOwsLayers:
         self.logger = logger
 
         # parse QGIS Server version
-        parts = QGIS_SERVER_VERSION.split('.')
+        parts = qgis_server_version.split('.')
         # [major, minor, rev]
         version = [0, 0, 0]
         for i, part in enumerate(parts):
             try:
                 version[i] = int(part)
             except ValueError as e:
-                self.logger.error("Error parsing QGIS_SERVER_VERSION: %s" % e)
+                self.logger.error("Error parsing qgis_server_version: %s" % e)
             if i > 2:
                 break
 
