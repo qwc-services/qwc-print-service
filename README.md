@@ -1,3 +1,6 @@
+[![](https://github.com/qwc-services/qwc-print-service/workflows/build/badge.svg)](https://hub.docker.com/repository/docker/sourcepole/qwc-print-service)
+[![](https://img.shields.io/docker/pulls/sourcepole/qwc-print-service)](https://hub.docker.com/repository/docker/sourcepole/qwc-print-service)
+
 QWC Print service
 =================
 
