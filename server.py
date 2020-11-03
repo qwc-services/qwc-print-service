@@ -1,7 +1,8 @@
 from flask import Flask, abort, request, Response, stream_with_context, \
     jsonify
 from flask_restx import Api, Resource
-from flask_jwt_extended import jwt_optional, get_jwt_identity
+from flask_jwt_extended import jwt_optional, get_jwt_identity, \
+    create_access_token
 import os
 import requests
 import json
@@ -65,6 +66,8 @@ class Print(Resource):
         tenant = tenant_handler.tenant()
         config = config_handler.tenant_config(tenant)
 
+        identity = get_jwt_identity()
+
         ogc_service_url = config.get(
             'ogc_service_url', 'http://localhost:5013/')
         print_pdf_filename = config.get('print_pdf_filename')
@@ -110,7 +113,9 @@ class Print(Resource):
         # add fields from custom label queries
         for label_config in label_queries_config:
             conn = psycopg2.connect(label_config["db_url"])
-            sql = label_config["query"].replace("$username$", "'%s'" % (get_jwt_identity() or ""))
+            sql = label_config["query"].replace(
+                "$username$", "'%s'" % (identity or "")
+            )
             cursor = conn.cursor()
             cursor.execute(sql)
             row = cursor.fetchone()
@@ -120,9 +125,18 @@ class Print(Resource):
                     params[param] = row[idx]
             conn.close()
 
-        # forward to QGIS server
+        # forward to OGC service
+        headers = {}
+        if identity:
+            # add authorization headers for forwarding identity
+            app.logger.debug(
+                "Adding authorization headers for identity '%s'" % identity
+            )
+            access_token = create_access_token(identity)
+            headers['Authorization'] = "Bearer " + access_token
+
         url = ogc_service_url.rstrip("/") + "/" + mapid + qgs_postfix
-        req = requests.post(url, timeout=120, data=params)
+        req = requests.post(url, timeout=120, data=params, headers=headers)
         app.logger.info("Forwarding request to %s\n%s" % (req.url, params))
 
         response = Response(
