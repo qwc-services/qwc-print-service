@@ -1,14 +1,13 @@
 from flask import Flask, abort, request, Response, stream_with_context, \
     jsonify
 from flask_restx import Api, Resource
-from flask_jwt_extended import jwt_optional, get_jwt_identity, \
-    create_access_token
+from flask_jwt_extended import create_access_token
 import os
 import requests
 import json
 import psycopg2
 
-from qwc_services_core.jwt import jwt_manager
+from qwc_services_core.auth import auth_manager, optional_auth, get_auth_user
 from qwc_services_core.tenant_handler import TenantHandler
 from qwc_services_core.runtime_config import RuntimeConfig
 from external_ows_layers import ExternalOwsLayers
@@ -23,8 +22,7 @@ api = Api(app, version='1.0', title='Print API',
 # disable verbose 404 error message
 app.config['ERROR_404_HELP'] = False
 
-# Setup the Flask-JWT-Extended extension
-jwt = jwt_manager(app, api)
+auth = auth_manager(app, api)
 
 
 tenant_handler = TenantHandler(app.logger)
@@ -36,7 +34,7 @@ config_handler = RuntimeConfig("print", app.logger)
 @api.param('mapid', 'The WMS service map name')
 class Print(Resource):
     @api.doc('print')
-    @jwt_optional
+    @optional_auth
     @api.param('DPI', 'The print dpi', _in='formData')
     @api.param('SRS', 'The SRS of the specified map extent', _in='formData')
     @api.param('TEMPLATE', 'The print template', _in='formData')
@@ -66,7 +64,7 @@ class Print(Resource):
         tenant = tenant_handler.tenant()
         config = config_handler.tenant_config(tenant)
 
-        identity = get_jwt_identity()
+        identity = get_auth_user()
 
         ogc_service_url = config.get(
             'ogc_service_url', 'http://localhost:5013/')
