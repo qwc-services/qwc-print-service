@@ -56,6 +56,7 @@ class Print(Resource):
     @api.param('map0:HIGHLIGHT_LABELBUFFERCOLOR', 'The label buffer colors for the highlight geometries', _in='formData')
     @api.param('map0:HIGHLIGHT_LABELBUFFERSIZE', 'The label buffer sizes for the highlight geometries', _in='formData')
     @api.param('map0:HIGHLIGHT_LABELSIZE', 'The label sizes for the highlight geometries', _in='formData')
+    @api.param('CONTENT_DISPOSITION', 'Content disposition mode, either inline or attachment', _in='formData')
     def post(self, mapid):
         """Submit query
 
@@ -76,6 +77,9 @@ class Print(Resource):
 
         post_params = dict(request.form.items())
         app.logger.info("POST params: %s" % post_params)
+
+        content_disposition = post_params.get('CONTENT_DISPOSITION', 'attachment')
+        del post_params['CONTENT_DISPOSITION']
 
         params = {
             "SERVICE": "WMS",
@@ -145,8 +149,8 @@ class Print(Resource):
         response.headers['content-type'] = req.headers['content-type']
         if req.headers['content-type'] == 'application/pdf':
             filename = print_pdf_filename or (mapid + '.pdf')
-            response.headers['content-disposition'] = \
-                'attachment; filename=' + filename
+            response.headers['content-disposition'] = content_disposition + \
+                '; filename=' + filename
 
         return response
 
