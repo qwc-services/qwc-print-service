@@ -79,7 +79,9 @@ class Print(Resource):
         app.logger.info("POST params: %s" % post_params)
 
         content_disposition = post_params.get('CONTENT_DISPOSITION', 'attachment')
-        del post_params['CONTENT_DISPOSITION']
+
+        if 'CONTENT_DISPOSITION' in post_params:
+            del post_params['CONTENT_DISPOSITION']
 
         params = {
             "SERVICE": "WMS",
