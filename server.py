@@ -139,7 +139,9 @@ class Print(Resource):
             access_token = create_access_token(identity)
             headers['Authorization'] = "Bearer " + access_token
 
-        headers['Tenant'] = request.headers.get('Tenant')
+        if tenant_handler.tenant_header:
+            headers[tenant_handler.tenant_header] = request.headers.get(
+                tenant_handler.tenant_header)
 
         url = ogc_service_url.rstrip("/") + "/" + mapid + qgs_postfix
         req = requests.post(url, timeout=120, data=params, headers=headers)
