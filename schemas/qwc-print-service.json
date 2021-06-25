@@ -22,8 +22,7 @@
       "properties": {
         "ogc_service_url": {
           "description": "OGC Service URL (internal)",
-          "type": "string",
-          "format": "uri"
+          "type": "string"
         },
         "qgis_server_version": {
           "description": "QGIS Server version (e.g. 2.18.19, 3.4.1)",
