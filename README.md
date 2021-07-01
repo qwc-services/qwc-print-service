@@ -6,7 +6,7 @@ QWC Print service
 
 API documentation:
 
-    http://localhost:5015/api/
+    http://localhost:5019/api/
 
 
 Configuration

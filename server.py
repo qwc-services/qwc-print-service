@@ -178,4 +178,4 @@ if __name__ == '__main__':
     print("Starting GetPrint service...")
     from flask_cors import CORS
     CORS(app)
-    app.run(host='localhost', port=5015, debug=True)
+    app.run(host='localhost', port=5019, debug=True)
