@@ -30,7 +30,7 @@ config_handler = RuntimeConfig("print", app.logger)
 
 
 # routes
-@api.route('/<mapid>')
+@api.route('/<path:mapid>')
 @api.param('mapid', 'The WMS service map name')
 class Print(Resource):
     @api.doc('print')
@@ -63,9 +63,11 @@ class Print(Resource):
         Return map print
         """
         tenant = tenant_handler.tenant()
+        app.logger.debug("tenant: %s" % tenant)
         config = config_handler.tenant_config(tenant)
 
         identity = get_auth_user()
+        app.logger.debug("identity: %s" % identity)
 
         ogc_service_url = config.get(
             'ogc_service_url', 'http://localhost:5013/')
