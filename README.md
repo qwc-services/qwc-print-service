@@ -97,7 +97,7 @@ Install requirements:
 
 Set the `CONFIG_PATH` environment variable to the path containing the service config and permission files when starting this service (default: `config`).
 
-    export CONFIG_PATH=../qwc-docker/demo-config
+    export CONFIG_PATH=../qwc-docker/volumes/config
 
 Configure environment:
 
