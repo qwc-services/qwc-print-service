@@ -146,8 +146,8 @@ class Print(Resource):
                 tenant_handler.tenant_header)
 
         url = ogc_service_url.rstrip("/") + "/" + mapid + qgs_postfix
-        req = requests.post(url, timeout=120, data=params, headers=headers)
         app.logger.info("Forwarding request to %s\n%s" % (req.url, params))
+        req = requests.post(url, timeout=120, data=params, headers=headers)
 
         response = Response(
             stream_with_context(
