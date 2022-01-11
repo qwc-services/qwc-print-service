@@ -80,7 +80,8 @@ class Print(Resource):
         post_params = dict(request.form.items())
         app.logger.info("POST params: %s" % post_params)
 
-        content_disposition = post_params.get('CONTENT_DISPOSITION', 'attachment')
+        content_disposition = post_params.get(
+            'CONTENT_DISPOSITION', 'attachment')
 
         if 'CONTENT_DISPOSITION' in post_params:
             del post_params['CONTENT_DISPOSITION']
