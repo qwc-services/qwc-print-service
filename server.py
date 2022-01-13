@@ -145,7 +145,8 @@ class Print(Resource):
         if tenant_handler.tenant_header:
             headers[tenant_handler.tenant_header] = request.headers.get(
                 tenant_handler.tenant_header)
-        headers['host'] = request.host
+        # Forward origin to OGC service
+        headers['origin'] = request.origin
 
         url = ogc_service_url.rstrip("/") + "/" + mapid + qgs_postfix
         app.logger.info("Forwarding request to %s\n%s" % (url, params))
