@@ -36,6 +36,24 @@
           "description": "optional filename for returned PDF (default: <WMS map name>.pdf)",
           "type": "string"
         },
+        "label_values": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "field": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "field",
+              "value"
+            ]
+          }
+        },
         "label_queries": {
           "type": "array",
           "items": {

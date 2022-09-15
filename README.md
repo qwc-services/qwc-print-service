@@ -37,6 +37,12 @@ Example:
           "NAME"
         ]
       }
+    ],
+    "label_values": [
+      {
+        "field": "USERNAME",
+        "value": "$username$"
+      }
     ]
   },
   "resources": {

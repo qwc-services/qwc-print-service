@@ -75,6 +75,7 @@ class Print(Resource):
         qgs_postfix = config.get('qgs_postfix', '')
         qgis_server_version = config.get('qgis_server_version', '2.18.19')
         label_queries_config = config.get('label_queries', [])
+        label_values_config = config.get('label_values', [])
         # TODO: read resources
 
         post_params = dict(request.form.items())
@@ -131,6 +132,9 @@ class Print(Resource):
                 for idx, param in enumerate(label_config['params']):
                     params[param] = row[idx]
             conn.close()
+
+        for label_val in label_values_config:
+            params[label_val["field"]] = label_val["value"].replace("$username$", "'%s'" % (identity or ""))
 
         # forward to OGC service
         headers = {}
