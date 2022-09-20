@@ -122,7 +122,7 @@ class Print(Resource):
         for label_config in label_queries_config:
             conn = psycopg2.connect(label_config["db_url"])
             sql = label_config["query"].replace(
-                "$username$", "'%s'" % (identity or "")
+                "$username$", "%s" % (identity or "")
             )
             cursor = conn.cursor()
             cursor.execute(sql)
