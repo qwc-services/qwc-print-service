@@ -122,7 +122,7 @@ class Print(Resource):
         for label_config in label_queries_config:
             conn = psycopg2.connect(label_config["db_url"])
             sql = label_config["query"].replace(
-                "$username$", "%s" % (identity or "")
+                "$username$", "'%s'" % (identity or "")
             )
             cursor = conn.cursor()
             cursor.execute(sql)
@@ -134,7 +134,7 @@ class Print(Resource):
             conn.close()
 
         for label_val in label_values_config:
-            params[label_val["field"]] = label_val["value"].replace("$username$", "'%s'" % (identity or ""))
+            params[label_val["field"]] = label_val["value"].replace("$username$", "%s" % (identity or ""))
 
         # forward to OGC service
         headers = {}
