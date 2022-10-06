@@ -7,7 +7,7 @@ import requests
 import json
 import psycopg2
 
-from qwc_services_core.auth import auth_manager, optional_auth, get_auth_user
+from qwc_services_core.auth import auth_manager, optional_auth, get_auth_user, get_username
 from qwc_services_core.tenant_handler import TenantHandler
 from qwc_services_core.runtime_config import RuntimeConfig
 from external_ows_layers import ExternalOwsLayers
@@ -67,7 +67,6 @@ class Print(Resource):
         config = config_handler.tenant_config(tenant)
 
         identity = get_auth_user()
-        app.logger.debug("identity: %s" % identity)
 
         ogc_service_url = config.get(
             'ogc_service_url', 'http://localhost:5013/')
@@ -122,7 +121,7 @@ class Print(Resource):
         for label_config in label_queries_config:
             conn = psycopg2.connect(label_config["db_url"])
             sql = label_config["query"].replace(
-                "$username$", "'%s'" % (identity or "")
+                "$username$", "'%s'" % (get_username(identity) or "")
             )
             cursor = conn.cursor()
             cursor.execute(sql)
@@ -134,14 +133,14 @@ class Print(Resource):
             conn.close()
 
         for label_val in label_values_config:
-            params[label_val["field"]] = label_val["value"].replace("$username$", "%s" % (identity or ""))
+            params[label_val["field"]] = label_val["value"].replace("$username$", "%s" % (get_username(identity) or ""))
 
         # forward to OGC service
         headers = {}
         if identity:
             # add authorization headers for forwarding identity
             app.logger.debug(
-                "Adding authorization headers for identity '%s'" % identity
+                "Adding authorization headers for identity '%s'" % get_username(identity)
             )
             access_token = create_access_token(identity)
             headers['Authorization'] = "Bearer " + access_token
