@@ -139,14 +139,17 @@ class ExternalOwsLayers:
 
         wms_layers = []
         layer_opacities = []
+        
+        nb_external_layers = len(re.findall("EXTERNAL_WMS:",",".join(layers)))
+        
         for i, layer in enumerate(layers):
             m = wms_layer_pattern.match(layer)
             if m is not None:
                 # external WMS layer
                 # generate name for external layer (A, B, C, ..., AA, BB, ...)
-                name = chr(97 + i % 26).upper()
-                if i > 26:
-                    name *= (i // 26) + 1
+                name = chr(97 + ( i + nb_external_layers ) % 26).upper()
+                if ( i + nb_external_layers ) > 26:
+                    name *= ((i + nb_external_layers) // 26) + 1
 
                 base_url = self.url_with_suffix(m.group(1))
                 layers = m.group(2)
