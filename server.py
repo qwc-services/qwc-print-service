@@ -99,7 +99,7 @@ class Print(Resource):
         # Search layers parameter
         layerparam = None
         for key, value in params.items():
-            if key.endswith(":LAYERS"):
+            if key.startswith("MAP") and key.endswith(":LAYERS"):
                 layerparam = key
                 break
         if not layerparam:
