@@ -1,4 +1,4 @@
-Flask==2.0.2
+Flask==2.2.5
 werkzeug==2.0.2
 python-dotenv==0.19.2
 flask-restx==0.5.1
