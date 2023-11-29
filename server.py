@@ -7,7 +7,7 @@ import requests
 import json
 import psycopg2
 
-from qwc_services_core.auth import auth_manager, optional_auth, get_auth_user, get_username
+from qwc_services_core.auth import auth_manager, optional_auth, get_identity, get_username
 from qwc_services_core.tenant_handler import TenantHandler
 from qwc_services_core.runtime_config import RuntimeConfig
 from external_ows_layers import ExternalOwsLayers
@@ -66,7 +66,7 @@ class Print(Resource):
         app.logger.debug("tenant: %s" % tenant)
         config = config_handler.tenant_config(tenant)
 
-        identity = get_auth_user()
+        identity = get_identity()
 
         ogc_service_url = config.get(
             'ogc_service_url', 'http://localhost:5013/')
