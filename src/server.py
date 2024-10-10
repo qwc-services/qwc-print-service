@@ -72,7 +72,7 @@ class Print(Resource):
             'ogc_service_url', 'http://localhost:5013/')
         print_pdf_filename = config.get('print_pdf_filename')
         qgs_postfix = config.get('qgs_postfix', '')
-        qgis_server_version = config.get('qgis_server_version', '2.18.19')
+        qgis_server_version = config.get('qgis_server_version', '3')
         label_queries_config = config.get('label_queries', [])
         label_values_config = config.get('label_values', [])
         # TODO: read resources

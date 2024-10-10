@@ -25,7 +25,7 @@
           "type": "string"
         },
         "qgis_server_version": {
-          "description": "QGIS Server version (e.g. 2.18.19, 3.4.1)",
+          "description": "QGIS Server version (e.g. 3). Default: 3",
           "type": "string"
         },
         "qgs_postfix": {
