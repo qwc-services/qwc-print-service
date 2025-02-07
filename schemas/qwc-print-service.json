@@ -25,11 +25,7 @@
           "type": "string"
         },
         "qgs_postfix": {
-          "description": "optional postfix to QGS name for printing",
-          "type": "string"
-        },
-        "print_pdf_filename": {
-          "description": "optional filename for returned PDF (default: <WMS map name>.pdf)",
+          "description": "Optional QGIS project name postfix, to use a different project when printing. Default: ``",
           "type": "string"
         },
         "label_values": {
@@ -38,10 +34,12 @@
             "type": "object",
             "properties": {
               "field": {
-                "type": "string"
+                "type": "string",
+                "description": "Name of field to inject into print params."
               },
               "value": {
-                "type": "string"
+                "type": "string",
+                "description": "Value of field to inject into print params. May contain `$username$`, which will be replaced with the current user name."
               }
             },
             "required": [
@@ -56,13 +54,16 @@
             "type": "object",
             "properties": {
               "db_url": {
-                "type": "string"
+                "type": "string",
+                "description": "DB url"
               },
               "query": {
-                "type": "string"
+                "type": "string",
+                "description": "SQL Query. May contain `$username$`, which will be replaced with the current user name."
               },
               "params": {
                 "type": "array",
+                "description": "Names of params to inject into the print params, in order of the values returned by the query.",
                 "items": {
                   "type": "string"
                 }
@@ -77,37 +78,12 @@
         }
       },
       "required": [
-        "ogc_service_url",
-        "qgis_server_version"
-      ]
-    },
-    "resources": {
-      "title": "Resources",
-      "type": "object",
-      "properties": {
-        "print_templates": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "template": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "template"
-            ]
-          }
-        }
-      },
-      "required": [
-        "print_templates"
+        "ogc_service_url"
       ]
     }
   },
   "required": [
     "service",
-    "config",
-    "resources"
+    "config"
   ]
 }

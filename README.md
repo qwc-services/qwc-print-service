@@ -4,6 +4,8 @@
 QWC Print service
 =================
 
+Forwards a print request to the OGC service, allowing injecting additional GetPrint WMS parameters (i.e. layout user labels).
+
 API documentation:
 
     http://localhost:5019/api/
@@ -43,37 +45,39 @@ Example:
         "value": "$username$"
       }
     ]
-  },
-  "resources": {
-    "print_templates": [
-      {
-        "template": "A4 hoch"
-      }
-    ]
   }
 }
 ```
 
-`label_queries` is a configuration for additional query parameters to inject into the
-WMS `GetPrint` request.
+`label_queries` allows configuring additional parameters to inject into the WMS `GetPrint` request, which will be computed from a DB query
+The format is as follows:
 
-The contents is expected to be
-
-    {
-      "label_queries": [{
+    "label_queries": [
+      {
         "db_url": "<db_url>",
         "query": "<query>",
         "params": ["<ParamName1>", ...]
       },{
         ...
-      }],
-    }
+      }
+    ]
 
 where:
 
 * `query` is an arbitrary query, returning exactly one row. The `$username$` placeholder can be used to inject the current username.
 * `params` is an array of parameter names to inject. The same number of parameters as number of returned values by the query must be specified.
 
+Similarly, `label_values` allows configuring additional static parameters to inject into the WMS `GetPrint` request.
+The format is as follows:
+
+    "label_values": [
+      {
+        "field": "<ParamName1>",
+        "value": "<value>"
+      },{
+        ...
+      }
+    ]
 
 ### Environment variables
 
