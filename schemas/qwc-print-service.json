@@ -21,11 +21,7 @@
       "type": "object",
       "properties": {
         "ogc_service_url": {
-          "description": "OGC Service URL (internal)",
-          "type": "string"
-        },
-        "qgis_server_version": {
-          "description": "QGIS Server version (e.g. 3). Default: 3",
+          "description": "Internal OGC service url. Default: `http://qwc-ogc-service:9090/`",
           "type": "string"
         },
         "qgs_postfix": {

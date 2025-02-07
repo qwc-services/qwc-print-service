@@ -27,7 +27,6 @@ Example:
   "service": "print",
   "config": {
     "ogc_service_url": "http://localhost:5013/ows/",
-    "qgis_server_version": "3.4.1",
     "print_pdf_filename": "qwc.pdf",
     "label_queries": [
       {

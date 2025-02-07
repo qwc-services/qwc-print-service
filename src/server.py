@@ -1,5 +1,4 @@
-from flask import Flask, abort, request, Response, stream_with_context, \
-    jsonify
+from flask import Flask, abort, request, Response, stream_with_context, jsonify
 from flask_restx import Api, Resource
 from flask_jwt_extended import create_access_token
 import os
@@ -10,7 +9,6 @@ import psycopg2
 from qwc_services_core.auth import auth_manager, optional_auth, get_identity, get_username
 from qwc_services_core.tenant_handler import TenantHandler
 from qwc_services_core.runtime_config import RuntimeConfig
-from external_ows_layers import ExternalOwsLayers
 
 
 # Flask application
@@ -63,7 +61,6 @@ class Print(Resource):
         Return map print
         """
         tenant = tenant_handler.tenant()
-        app.logger.debug("tenant: %s" % tenant)
         config = config_handler.tenant_config(tenant)
 
         identity = get_identity()
@@ -72,10 +69,8 @@ class Print(Resource):
             'ogc_service_url', 'http://localhost:5013/')
         print_pdf_filename = config.get('print_pdf_filename')
         qgs_postfix = config.get('qgs_postfix', '')
-        qgis_server_version = config.get('qgis_server_version', '3')
         label_queries_config = config.get('label_queries', [])
         label_values_config = config.get('label_values', [])
-        # TODO: read resources
 
         post_params = dict(request.form.items())
         app.logger.info("POST params: %s" % post_params)
@@ -91,31 +86,8 @@ class Print(Resource):
             "VERSION": "1.3.0",
             "REQUEST": "GetPrint"
         }
-        params.update(post_params)
-
-        # normalize parameter keys to upper case
-        params = {k.upper(): v for k, v in params.items()}
-
-        # Search layers parameter
-        layerparam = None
-        for key, value in params.items():
-            if key.startswith("MAP") and key.endswith(":LAYERS"):
-                layerparam = key
-                break
-        if not layerparam:
-            abort(400, "Missing <mapName>:LAYERS parameter")
-
-        template = params.get('TEMPLATE')
-        layers = params.get(layerparam, '').split(',')
-        opacities = params.get('OPACITIES', [])
-        if opacities:
-            opacities = opacities.split(',')
-        colors = params.get('COLORS', '').split(',')
-
-        # extract any external WMS and WFS layers
-        external_ows_layers = ExternalOwsLayers(
-            qgis_server_version, app.logger)
-        external_ows_layers.update_params(params, layerparam)
+        # NOTE: normalize parameter keys to upper case
+        params.update({k.upper(): v for k, v in post_params.items()})
 
         # add fields from custom label queries
         for label_config in label_queries_config:
