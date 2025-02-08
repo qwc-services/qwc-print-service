@@ -1,13 +1,13 @@
 from flask import Flask, abort, request, Response, stream_with_context, jsonify
 from flask_restx import Api, Resource
 from flask_jwt_extended import create_access_token
-import os
 import requests
 import json
 import psycopg2
 
 from qwc_services_core.auth import auth_manager, optional_auth, get_identity, get_username
-from qwc_services_core.tenant_handler import TenantHandler
+from qwc_services_core.tenant_handler import (
+    TenantHandler, TenantPrefixMiddleware, TenantSessionInterface)
 from qwc_services_core.runtime_config import RuntimeConfig
 
 
@@ -22,8 +22,10 @@ app.config['ERROR_404_HELP'] = False
 
 auth = auth_manager(app, api)
 
-
 tenant_handler = TenantHandler(app.logger)
+app.wsgi_app = TenantPrefixMiddleware(app.wsgi_app)
+app.session_interface = TenantSessionInterface()
+
 config_handler = RuntimeConfig("print", app.logger)
 
 
