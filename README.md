@@ -89,6 +89,12 @@ Config options in the config file can be overridden by equivalent uppercase envi
 | `QGIS_SERVER_VERSION`      | QGIS Server version (e.g. `2.18.19`, `3.4.1`) |
 
 
+Docker usage
+------------
+
+See sample [docker-compose.yml](https://github.com/qwc-services/qwc-docker/blob/master/docker-compose-example.yml) of [qwc-docker](https://github.com/qwc-services/qwc-docker).
+
+
 Development
 -----------
 
