@@ -6,11 +6,6 @@ QWC Print service
 
 Forwards a print request to the OGC service, allowing injecting additional GetPrint WMS parameters (i.e. layout user labels).
 
-API documentation:
-
-    http://localhost:5019/api/
-
-
 Configuration
 -------------
 
@@ -83,29 +78,28 @@ The format is as follows:
 
 Config options in the config file can be overridden by equivalent uppercase environment variables.
 
-| Variable                   | Description                                   |
-|----------------------------|-----------------------------------------------|
-| `OGC_SERVICE_URL`          | OGC Service URL                               |
-| `QGIS_SERVER_VERSION`      | QGIS Server version (e.g. `2.18.19`, `3.4.1`) |
 
+Run locally
+-----------
+
+Install dependencies and run:
+
+    export CONFIG_PATH=<CONFIG_PATH>
+    uv run src/server.py
+
+To use configs from a `qwc-docker` setup, set `CONFIG_PATH=<...>/qwc-docker/volumes/config`.
+
+Set `FLASK_DEBUG=1` for additional debug output.
+
+Set `FLASK_RUN_PORT=<port>` to change the default port (default: `5000`).
+
+API documentation:
+
+    http://localhost:$FLASK_RUN_PORT/api/
 
 Docker usage
 ------------
 
+The Docker image is published on [Dockerhub](https://hub.docker.com/r/sourcepole/qwc-print-service).
+
 See sample [docker-compose.yml](https://github.com/qwc-services/qwc-docker/blob/master/docker-compose-example.yml) of [qwc-docker](https://github.com/qwc-services/qwc-docker).
-
-
-Development
------------
-
-Set the `CONFIG_PATH` environment variable to the path containing the service config and permission files when starting this service (default: `config`).
-
-    export CONFIG_PATH=../qwc-docker/volumes/config
-
-Configure environment:
-
-    echo FLASK_ENV=development >.flaskenv
-
-Install dependencies and run service:
-
-    uv run src/server.py
