@@ -1,9 +1,11 @@
+import json
+import os
+import psycopg2
+import requests
+
 from flask import Flask, abort, request, Response, stream_with_context, jsonify
 from flask_restx import Api, Resource
 from flask_jwt_extended import create_access_token
-import requests
-import json
-import psycopg2
 
 from qwc_services_core.auth import auth_manager, optional_auth, get_identity, get_username
 from qwc_services_core.tenant_handler import (
@@ -160,4 +162,4 @@ if __name__ == '__main__':
     print("Starting GetPrint service...")
     from flask_cors import CORS
     CORS(app)
-    app.run(host='localhost', port=5019, debug=True)
+    app.run(host='localhost', port=os.environ.get("FLASK_RUN_PORT", 5000), debug=True)
