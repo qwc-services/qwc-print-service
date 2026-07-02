@@ -4,9 +4,10 @@ import psycopg2
 import requests
 
 from flask import Flask, abort, request, Response, stream_with_context, jsonify
-from flask_restx import Api, Resource
+from flask_restx import Resource
 from flask_jwt_extended import create_access_token
 
+from qwc_services_core.api import Api
 from qwc_services_core.auth import auth_manager, optional_auth, get_identity, get_username
 from qwc_services_core.tenant_handler import (
     TenantHandler, TenantPrefixMiddleware, TenantSessionInterface)
@@ -60,10 +61,7 @@ class Print(Resource):
     @api.param('map0:HIGHLIGHT_LABELSIZE', 'The label sizes for the highlight geometries', _in='formData')
     @api.param('CONTENT_DISPOSITION', 'Content disposition mode, either inline or attachment', _in='formData')
     def post(self, mapid):
-        """Submit query
-
-        Return map print
-        """
+        """Query a map print document"""
         tenant = tenant_handler.tenant()
         config = config_handler.tenant_config(tenant)
 
