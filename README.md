@@ -1,6 +1,8 @@
 [![](https://github.com/qwc-services/qwc-print-service/workflows/build/badge.svg)](https://github.com/qwc-services/qwc-print-service/actions)
 [![docker](https://img.shields.io/docker/v/sourcepole/qwc-print-service?label=Docker%20image&sort=semver)](https://hub.docker.com/r/sourcepole/qwc-print-service)
 
+# Starting from qwc-ogc-service:v2026.10.23, this repository is obsolete, the qwc-print-service functionality has been merged into the [qwc-ogc-service](https://github.com/qwc-services/qwc-ogc-service).
+
 QWC Print service
 =================
 
